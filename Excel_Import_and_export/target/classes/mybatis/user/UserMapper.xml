@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lin.springboot.user.dao.UserDao">
+
+	<select id="getlist" resultType="com.lin.springboot.user.bean.UserBean"
+		parameterType="com.lin.springboot.user.bean.UserBean">
+
+		SELECT user_id id ,NAME ,PASSWORD FROM sys_user
+
+	</select>
+
+</mapper>
