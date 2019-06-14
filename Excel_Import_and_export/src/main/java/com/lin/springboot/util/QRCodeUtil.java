@@ -2,14 +2,29 @@
  * 
  */
 package com.lin.springboot.util;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
+
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
 import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatReader;
 import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.Result;
 import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.common.HybridBinarizer;
 
 /**
  * @author Administrator
@@ -39,7 +54,7 @@ public class QRCodeUtil {
         //设置图片的文字编码以及内边框
         Map<EncodeHintType, Object> hints = new HashMap<>();
         //编码
-        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
         //边框距
         hints.put(EncodeHintType.MARGIN, 0);
         BitMatrix bitMatrix;
@@ -53,5 +68,45 @@ public class QRCodeUtil {
         return bitMatrix;
         
     }
+    /**
+     * 从输入流解析二维码
+     * 
+     * @param inputStream
+     * @return
+     * @throws IOException
+     * @throws NotFoundException
+     */
+    @SuppressWarnings("unchecked")
+    public static Result parseQRCode(InputStream inputStream) throws IOException, NotFoundException {
+      @SuppressWarnings("rawtypes")
+      Map map = new HashMap();
 
+      map.put(EncodeHintType.CHARACTER_SET, "utf-8");
+
+      BinaryBitmap binaryBitmap = null;
+
+      BufferedImage bufferedImage = ImageIO.read(inputStream);
+
+      binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(bufferedImage)));
+
+      Result result = new MultiFormatReader().decode(binaryBitmap, map);
+
+      return result;
+    }
+    /**
+     * 将BufferedImage转换为InputStream
+     * @param image
+     * @return
+     */
+    public static InputStream bufferedImageToInputStream(BufferedImage image){
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "png", os);
+            InputStream input = new ByteArrayInputStream(os.toByteArray());
+            return input;
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
+        return null;
+    }
 }
